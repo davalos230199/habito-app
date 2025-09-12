@@ -1,0 +1,9 @@
+# Ignorar dependencias de Node
+node_modules/
+
+# Ignorar archivos de entorno (contienen secretos)
+.env
+
+# Ignorar logs y archivos de compilación
+/client/dist
+/server/logs
