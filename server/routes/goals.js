@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
     if (error) throw error;
 
-    res.status(200).json(data);
+    res.status(200).json(data || []);
 
   } catch (error) {
     console.error('Error al obtener metas del usuario:', error.message);
