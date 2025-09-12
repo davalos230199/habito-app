@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Onboarding from '../components/Onboarding'; // <-- 1. Importa el nuevo componente
+import apiClient from '../api';
 
 function HomePage() {
   const { user } = useAuth();
