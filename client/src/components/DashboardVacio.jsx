@@ -72,7 +72,7 @@ const materialDeEstudio = [
 
 export default function DashboardVacio({ onStartRitual }) {
     const { user } = useAuth(); 
-    const nombreUsuario = user?.username.split(' ')[0] || 'Viajero';
+    const nombreUsuario = 'Viajero';
 
     // Estado para el acordeón de "Material de Estudio" (se mantiene igual)
     const [expandedSlideId, setExpandedSlideId] = useState(null);
