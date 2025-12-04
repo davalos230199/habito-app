@@ -1,104 +1,66 @@
-// /src/pages/HomePage.jsx
+import React, { useState, useEffect } from 'react';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
-import Onboarding from '../components/Onboarding'; // <-- 1. Importa el nuevo componente
-import apiClient from '../api';
+// Contextos (Los cerebros)
+import { DiaProvider, useDia } from '../contexts/DiaContext';
+import { HeaderProvider, useHeader } from '../contexts/HeaderContext';
 
-function HomePage() {
-  const { user } = useAuth();
-  const [goals, setGoals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Componentes (Los órganos)
+import DashboardCajas from '../components/DashboardCajas';
+import RitualFlow from '../components/RitualFlow';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-  // 2. Creamos una función para buscar los datos, envuelta en useCallback para optimización.
-  const fetchGoals = useCallback(async () => {
-    if (user) {
-      setLoading(true);
-      try {
-        const response = await axios.get(`/api/goals?user_id=${user.id}`);
-        if (Array.isArray(response.data)) {
-          setGoals(response.data);
+// --- COMPONENTE INTERNO (La lógica de Sun Self fusionada) ---
+const ContenidoSunSelf = () => {
+    const { registroDeHoy, isLoading: isDiaLoading, refrescarDia } = useDia();
+    const { setTitle } = useHeader(); // El dummy que creamos
+    const [view, setView] = useState('loading'); 
+    const [dashboardActivo, setDashboardActivo] = useState('cajas'); 
+    
+    useEffect(() => {
+        // Lógica de vista simplificada
+        if (isDiaLoading) {
+            setView('loading');
         } else {
-          setError('Los datos recibidos no tienen el formato esperado.');
+            setView('dashboard');
         }
-      } catch (err) {
-        setError('No se pudieron cargar las metas.');
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, [user]);
+    }, [isDiaLoading]);
 
-  // 3. El useEffect ahora solo llama a fetchGoals.
-  useEffect(() => {
-    fetchGoals();
-  }, [fetchGoals]);
+    const handleRitualFinish = async () => {
+        setView('loading');
+        await refrescarDia(); // Recarga desde LocalStorage
+        setView('dashboard');
+    };
 
-  if (loading) {
-    return <p>Cargando tu plan...</p>;
-  }
+    // --- RENDERIZADO ---
+    if (view === 'loading') return <LoadingSpinner message="Sincronizando..." />;
+    
+    if (view === 'ritual') return <RitualFlow onFinish={handleRitualFinish} />;
 
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
-
-  const handleToggleGoal = async (goalId, currentStatus) => {
-  // 1. Actualización Optimista: Cambiamos el estado local inmediatamente.
-  setGoals(currentGoals => 
-    currentGoals.map(goal => 
-      goal.id === goalId ? { ...goal, completed: !currentStatus } : goal
-    )
-  );
-
-  // 2. Llamada a la API: Informamos al backend del cambio.
-  try {
-    await axios.put(`/api/goals/${goalId}`, {
-      completed: !currentStatus,
-    });
-  } catch (err) {
-    // 3. Rollback: Si la API falla, revertimos el cambio en la UI y mostramos un error.
-    console.error("Error al actualizar la meta:", err);
-    alert("No se pudo guardar el cambio, por favor intenta de nuevo.");
-    setGoals(currentGoals => 
-      currentGoals.map(goal => 
-        goal.id === goalId ? { ...goal, completed: currentStatus } : goal // Revertimos al estado original
-      )
+    return (
+        // QUITAMOS 'min-h-screen' y usamos 'h-full' para que respete el AppLayout
+        <div className="h-full flex flex-col pb-20 bg-zinc-100"> 
+            {view === 'dashboard' && (
+                dashboardActivo === 'registro' 
+                ? <RegistroDashboard onEdit={() => setView('ritual')} />
+                : <DashboardCajas onEdit={() => setView('ritual')} />
+            )}
+        </div>
     );
-  }
 };
 
-  // --- 4. LA LÓGICA PRINCIPAL ---
-  // Si no hay metas, muestra el Onboarding. Si hay, muestra la lista.
+// --- PÁGINA PRINCIPAL (El Contenedor) ---
+const HomePage = () => {
   return (
-    <div>
-      {goals.length > 0 ? (
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Metas para Hoy</h2>
- <ul className="space-y-3">
-  {goals.map((goal) => (
-    <li key={goal.id} className="bg-gray-50 p-3 rounded-lg flex items-center transition-all duration-300">
-<input 
-  type="checkbox" 
-  className="mr-4 h-6 w-6 rounded border-gray-300 text-green-500 focus:ring-green-500 cursor-pointer"
-  checked={goal.completed}
-  onChange={() => handleToggleGoal(goal.id, goal.completed)} // <-- ¡LÍNEA AÑADIDA!
-/>
-      <span className={goal.completed ? 'text-gray-400 line-through' : 'text-gray-800'}>
-        {goal.goal_templates.name}
-      </span>
-    </li>
-  ))}
-</ul>
-        </div>
-      ) : (
-        // Pasamos la función fetchGoals al componente Onboarding.
-        // Cuando el plan se cree, Onboarding llamará a esta función para recargar los datos.
-        <Onboarding onPlanCreated={fetchGoals} />
-      )}
-    </div>
+    // Proveedores de datos envolviendo todo
+    <HeaderProvider>
+      <DiaProvider>
+         {/* Quitamos paddings excesivos que causan desborde */}
+         <div className="w-full"> 
+           <ContenidoSunSelf />
+         </div>
+      </DiaProvider>
+    </HeaderProvider>
   );
-}
+};
 
 export default HomePage;

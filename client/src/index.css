@@ -1,3 +1,73 @@
+/* 1. IMPORTAMOS LA IDENTIDAD (Google Fonts) */
+/* DM Serif Display para títulos (Elegancia Nórdica) */
+/* Manrope para textos (Funcionalidad Moderna) */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 2. DEFINICIÓN BASE (Global Styles) */
+@layer base {
+  
+  /* El cuerpo base de la app */
+  html {
+    font-family: 'Manrope', sans-serif; /* Todo el texto normal usa esto */
+    color: #44403c; /* Stone-700: Un gris cálido, no negro puro (muy nórdico) */
+    background-color: #f5f5f4; /* Stone-100 */
+    -webkit-tap-highlight-color: transparent; /* Quita el brillo azul al tocar en móvil */
+  }
+
+  /* --- JERARQUÍA DE TÍTULOS (Identidad Fuerte) --- */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Serif Display', serif; /* Aquí vive la identidad */
+    font-weight: 400; /* Esta fuente ya es gruesa, no necesita bold extra */
+    letter-spacing: 0.02em; /* Un pelín de aire */
+    line-height: 1.1; /* Títulos compactos */
+    color: #1c1917; /* Stone-900: Casi negro */
+  }
+
+  h1 {
+    font-size: 2.25rem; /* 36px - Impactante */
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem; /* 24px - Secciones claras */
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem; /* 20px - Subtítulos */
+    margin-bottom: 0.25rem;
+  }
+
+  /* --- TEXTO DE PÁRRAFO (Legibilidad) --- */
+  p {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1rem; /* 16px base */
+    line-height: 1.6; /* Altura de línea generosa para leer relajado */
+    color: #57534e; /* Stone-600 */
+    margin-bottom: 0.75rem;
+  }
+
+  /* --- PEQUEÑOS DETALLES --- */
+  small, .text-xs {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* --- BOTONES (Toque moderno) --- */
+  button {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600; /* Semi-bold para acciones */
+    letter-spacing: 0.01em;
+  }
+}
+
+/* 3. UTILIDADES EXTRA (Si las necesitas) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}

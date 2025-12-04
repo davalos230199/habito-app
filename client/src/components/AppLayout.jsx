@@ -1,28 +1,38 @@
-// /src/components/AppLayout.jsx
-
 import { Outlet } from 'react-router-dom';
 import PageHeader from './PageHeader';
 import Navbar from './Navbar';
 
 function AppLayout() {
   return (
-    // Main container with a light gray background
-    <div className="bg-gray-100 min-h-screen flex justify-center">
+    // 1. CONTENEDOR PRINCIPAL:
+    // Cambiamos 'min-h-screen' por 'h-screen' y 'overflow-hidden'.
+    // Esto bloquea la página entera para que NO se mueva el navegador, solo la app.
+    <div className="bg-gray-100 h-screen w-screen overflow-hidden flex justify-center">
       
-      {/* Mobile-first container with a max-width, shadow, and white background */}
-      <div className="w-full max-w-md flex flex-col bg-white shadow-lg">
+      {/* 2. EL "CELULAR":
+          'h-full' toma exactamente el 100% de la altura disponible.
+          'relative' ayuda a posicionar elementos flotantes si los hubiera.
+      */}
+      <div className="w-full max-w-md h-full flex flex-col bg-zinc-100 shadow-lg relative">
         
-        {/* 1. Header Section (Sticky) */}
-        <PageHeader title="Página de Inicio" />
+        {/* Header: 'flex-none' evita que se aplaste o estire */}
+        <div className="flex-none z-10">
+            <PageHeader title="ᚺabito-app" />
+        </div>
         
-        {/* 2. Main Content Area (Scrollable) */}
-        {/* The 'Outlet' is where React Router will render the specific page (e.g., HomePage) */}
-        <main className="flex-grow overflow-y-auto p-4">
+        {/* 3. ZONA DE SCROLL (Main):
+            'flex-grow': Ocupa todo el espacio sobrante entre header y navbar.
+            'overflow-y-auto': AQUÍ es donde ocurre el scroll.
+            'pb-24': Agregamos padding extra abajo para que el último botón no quede tapado por la Navbar.
+        */}
+        <main className="flex-grow overflow-y-auto p-4 scroll-smooth">
           <Outlet />
         </main>
         
-        {/* 3. Navigation Bar (Fixed at the bottom) */}
-        <Navbar />
+        {/* Navbar: Fija al fondo visualmente gracias al flex container */}
+        <div className="flex-none z-10 bg-white">
+            <Navbar />
+        </div>
 
       </div>
     </div>
